@@ -1,0 +1,5 @@
+FastAPI[standard]
+pydantic
+sqlalchemy
+asyncpg
+psycopg
