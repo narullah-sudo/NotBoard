@@ -15,6 +15,7 @@ class ConfigBase(BaseSettings):
     DB_USER:str
     DB_PORT:int
     DB_HOST:str
+    DB_PASSWORD:str
     DEBUG_MODE:bool
 
     model_config = SettingsConfigDict(env_file = get_env_file(), env_file_encoding = "utf-8", extra="ignore")
