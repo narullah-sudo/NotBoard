@@ -1,12 +1,11 @@
-from sqlalchemy import ForeignKey, select
+from sqlalchemy import ForeignKey, select, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 from typing import Optional, List
-import sys, asyncio
-from pathlib import Path
+import asyncio
+from datetime import datetime
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from configs.DataBase import Base, sync_engine, async_engine, sync_session, async_session
+from configs import (Base, sync_engine, async_engine, sync_session, async_session)
 
 
 class User(Base):
@@ -17,33 +16,29 @@ class User(Base):
     email: Mapped[str]
     password: Mapped[str]
 
-    user_data: Mapped[Optional("UserData")] = relationship(
-        "UserData",
-        back_populates = 'user',
-        uselist = False,
-        cascade = "all, delete-orphan"
-    )
+    user_data: Mapped[Optional("UserData")] = relationship("UserData",back_populates = 'user',uselist = False,cascade = "all, delete-orphan")
+    session: Mapped[List["UserSession"]] = relationship(back_populates="user", delete = "all, delete-orphan")
+
+
+class UserSession(Base):
+    __tablename__ = "sessions"
+    session_id: Mapped[str | None] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("Users.id"),primary_key = True)
+    token_hash: Mapped[str] 
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+    user: Mapped[Optional("User")] = relationship(back_populates="session")
+
+
 
 class UserData(Base):
     __tablename__ = 'User_data'
 
+    user_id: Mapped[int] = mapped_column(ForeignKey("Users.id"),primary_key = True)
 
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("Users.id"),
-        primary_key = True)
-
-
-    notices: Mapped[List["Notice"]] = relationship(
-    "Notice",
-    uselist = True,
-    cascade = "all, delete-orphan",
-    back_populates = "creater")
-
-
-    user: Mapped[Optional("User")] = relationship(
-        "User",
-        back_populates = 'user_data'
-    )
+    notices: Mapped[List["Notice"]] = relationship("Notice",uselist = True,cascade = "all, delete-orphan",back_populates = "creater")
+    user: Mapped[Optional("User")] = relationship("User",back_populates = 'user_data')
 
 
 class Notice(Base):

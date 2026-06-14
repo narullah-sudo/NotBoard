@@ -1,13 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
-import sys
-from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from configs.config import get_env_settings
+from .config import get_env_settings
 
 env = get_env_settings()
 
@@ -19,7 +14,7 @@ sync_engine = create_engine(
     url = sync_url, echo = env.DEBUG_MODE
 )
 async_engine=create_async_engine(
-    url=async_url,echo=env.DEBUG_MODE
+    url=async_url,echo=env.DEBUG_MODE, class_=AsyncSession
 )
 
 sync_session = sessionmaker(
