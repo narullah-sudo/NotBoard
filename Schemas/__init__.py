@@ -2,12 +2,14 @@ from .Schema import (
     UserDataSchema,
     UserAddSchema,
     UserSchema,
-    NoticeSchema
+    NoticeSchema,
+    UserLoginSchema
 )
 
 __all__ = [
     UserDataSchema,
     UserAddSchema,
     UserSchema,
-    NoticeSchema
+    NoticeSchema,
+    UserLoginSchema
 ]

@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, select, DateTime
+from sqlalchemy import ForeignKey, select, DateTime, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 from typing import Optional, List
 import asyncio
@@ -14,21 +14,21 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key = True, nullable = False)
     name: Mapped[str]
     email: Mapped[str]
-    password: Mapped[str]
+    password: Mapped[bytes]
 
     user_data: Mapped[Optional("UserData")] = relationship("UserData",back_populates = 'user',uselist = False,cascade = "all, delete-orphan")
-    session: Mapped[List["UserSession"]] = relationship(back_populates="user", delete = "all, delete-orphan")
+    session: Mapped[Optional("UserSession")] = relationship("UserSession", back_populates="user", uselist=False, cascade= "all, delete-orphan")
 
 
 class UserSession(Base):
     __tablename__ = "sessions"
-    session_id: Mapped[str | None] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("Users.id"),primary_key = True)
+    session_id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("Users.id"))
     token_hash: Mapped[str] 
-    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    #expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    user: Mapped[Optional("User")] = relationship(back_populates="session")
+    user: Mapped[Optional("User")] = relationship("User", back_populates="session")
 
 
 

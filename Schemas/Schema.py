@@ -15,5 +15,9 @@ class NoticeSchema(BaseModel):
     title: str = Field(max_length = 60, min_length = 10)
     image: str = Field(max_length = 100, min_length = 3)
 
+class UserLoginSchema(BaseModel):
+    name: str
+    password: str
+
 
 

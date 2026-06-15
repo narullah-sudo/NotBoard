@@ -14,11 +14,11 @@ sync_engine = create_engine(
     url = sync_url, echo = env.DEBUG_MODE
 )
 async_engine=create_async_engine(
-    url=async_url,echo=env.DEBUG_MODE, class_=AsyncSession
+    url=async_url,echo=env.DEBUG_MODE
 )
 
 sync_session = sessionmaker(
-    bind = sync_engine, expire_on_commit = False
+    bind = sync_engine, expire_on_commit = False, class_=AsyncSession
 )
 async_session=async_sessionmaker(   
     bind=async_engine,expire_on_commit=False
